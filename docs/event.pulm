@@ -1,0 +1,22 @@
+@startuml
+start
+
+fork
+    :HTTP/WS;
+fork again
+    :Queue;
+end fork
+
+partition Server {
+    :Queue;
+    :Dispatchers;
+}
+
+fork
+    :HTTP/WS;
+fork again
+    :Queue;
+end fork
+
+end
+@enduml

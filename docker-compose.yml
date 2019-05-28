@@ -1,0 +1,29 @@
+version: "2"
+
+services:
+
+  trood-events:
+    build: .
+    container_name: trood-events
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DEBUG: "True"
+      HOST: "0.0.0.0"
+      PORT: 8080
+      SECRET_KEY: "548ab8296ff44d2f954c17d850833af1"
+      BROKER_URI: "amqp://rabbit:rabbit@rabbit:5672"
+      TROOD_AUTH_SERVICE_URL: "http://legal.dev.trood.ru/authorization"
+      SERVICE_DOMAIN: "EVENT"
+      SERVICE_AUTH_SECRET: "b1b4a229c0cb5865f67f0626dc9c184526dc6dd99f8f505b14d1c95739d523dfcfaa17534ea160364fe27e10e6c331a1c231f60be581e69fed4f5bf9c4dfdadb"
+
+  rabbit:
+    image: rabbitmq:3.5
+    container_name: legal-rabbit
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: rabbit
+    ports:
+      - "5672:5672"

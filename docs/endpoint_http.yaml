@@ -1,0 +1,50 @@
+description: Event HTTP entrypoint.
+tags:
+- HTTP    
+produces:
+- application/json
+parameters:
+- in: headers
+  name: token
+  type: string
+  description: User access token
+  required: true
+- in: body
+  required: true
+  description: Event data
+  schema:
+    type: object
+    properties:
+      protocol:
+        type: string
+        emun: [HTTP, WS, QUEUE]
+        description: Use protocol. One of HTTP, WS, QUEUE
+        required: true
+      recipients:
+        type: array
+        items:
+          type: string
+        description: Send to recipients. List of user emails.
+        required: true
+      data:
+        required: true
+        type: object
+        properties:
+          action:
+            required: true
+            type: string
+            emun: [SUBSCRIBE, UNSUBSCRIBE, NOTIFY]
+            description: Action. One of SUBSCRIBE, UNSUBSCRIBE, NOTIFY
+          data:
+            required: true
+            type: array
+            items:
+              type: object
+            description: Data for recipients
+responses:
+  "200":
+    description: Successful operation. Return "OK" text
+  "400":
+    description: Invalid response data
+  "405":
+    description: Invalid HTTP Method

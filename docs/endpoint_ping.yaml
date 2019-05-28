@@ -1,0 +1,10 @@
+description: This end-point allow to test that service is up.
+tags:
+- Health check
+produces:
+- text/plain
+responses:
+  "200":
+    description: Successful operation. Return "pong" text
+  "405":
+    description: Invalid HTTP Method

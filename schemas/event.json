@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "event.json",
+    "title": "Event",
+    "type": "object",
+    "required": ["protocol", "recipients", "data"],
+    "properties": {
+        "protocol": {
+            "$id": "#/properties/protocol",
+            "title": "Transfer protocol",
+            "type": "string",
+            "enum": ["HTTP", "WS", "QUEUE", "PUSH"]
+        },
+        "recipients": {
+            "$id": "#/properties/recipients",
+            "title": "Recipient keys",
+            "type": "array",
+            "items": {"type": "string"}
+        },
+        "data": {
+            "$id": "#/properties/data",
+            "title": "Event data",
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$id": "#/properties/data/action",
+                    "title": "Action",
+                    "type": "string",
+                    "enum": ["SUBSCRIBE", "UNSUBSCRIBE", "NOTIFY"]
+                },
+                "data": {
+                    "$id": "#/properties/data/data",
+                    "title": "Action data",
+                    "type": "array",
+                    "items": {"type": "object"}
+                }
+            }
+        }
+    }
+}
