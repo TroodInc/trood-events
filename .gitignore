@@ -1,1 +1,7 @@
 .idea
+.vscode
+.env
+Events.egg-info
+build
+dist
+docs/_build
