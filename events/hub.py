@@ -48,7 +48,7 @@ class Hub:
         OUTCOME_ACTIONS = ('NOTIFY', )
         # Validate
         action = data.pop('action', 'NOTIFY')
-        action_data = data.pop('data')
+        action_data = data.pop('data', {})
         if action in INCOME_ACTIONS:
             action = getattr(self, action.lower())
             await action(key, action_data)
