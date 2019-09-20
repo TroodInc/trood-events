@@ -29,6 +29,7 @@ Examples
         "protocol": "WS",
         "recipients": ["admin@demo.com"],
         "data": {
+            "domain": "CUSTODIAN",
             "action": "NOTIFY",
             "data": [{
                 "message_type": "ui_message",

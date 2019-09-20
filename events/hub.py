@@ -61,7 +61,9 @@ class Hub:
             return
 
         action_data = self.subsriber.check_subscriptions(key, action_data)
-        action_data = self.app['auth'].check_abac(self.users[key], action_data)
+        action_data = self.app['auth'].check_abac(
+            self.users[key], action_data, data.pop('domain')
+        )
         if action_data:
             await self.notify(key, action_data)
 

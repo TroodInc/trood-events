@@ -15,11 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class TroodABACEngine(ABACEngine):
+    retrive_actions = {'data_GET'}
 
-    def __init__(self, user, rules, data, domain=None, default=None):
-        if domain is None:
-            domain = 'FRONTEND'
-
+    def __init__(self, user, rules, data, domain, default=None):
         if default is None:
             default = 'allow'
 
@@ -42,8 +40,7 @@ class TroodABACEngine(ABACEngine):
                 continue
 
             for action, rules in actions.items():
-                # TODO: check FRONTEND equal key
-                if action != 'data_GET':
+                if action not in self.retrive_actions:
                     continue
 
                 result, filters, mask = self.check_permited(rules, self.subject, context)
@@ -128,8 +125,11 @@ class Client:
         return f'Service {domain}:{signature.decode("utf-8")}'
 
     @staticmethod
-    def check_abac(user, data):
-        engine = TroodABACEngine(user, user['abac'], data)
+    def check_abac(user, data, domain):
+        if domain is None:
+            domain = 'CUSTODIAN'
+
+        engine = TroodABACEngine(user, user['abac'], data, domain)
         engine.resolve()
         return engine.data
 
