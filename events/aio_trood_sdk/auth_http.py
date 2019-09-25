@@ -126,9 +126,6 @@ class Client:
 
     @staticmethod
     def check_abac(user, data, domain):
-        if domain is None:
-            domain = 'CUSTODIAN'
-
         engine = TroodABACEngine(user, user['abac'], data, domain)
         engine.resolve()
         return engine.data
