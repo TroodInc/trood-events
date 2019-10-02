@@ -29,16 +29,16 @@ class Filter:
         results = []
         for i, _ in enumerate(self.data):
             results.append((i, any(r[i][1] for r in sub_results)))
-        
+
         return results
 
     def _and(self, sub_results):
         results = []
         for i, _ in enumerate(self.data):
             results.append((i, all(r[i][1] for r in sub_results)))
-        
+
         return results
-    
+
     def _eq(self, key, value):
         results = []
         for i, record in enumerate(self.data):
@@ -68,21 +68,21 @@ class Filter:
             else:
                 stack[index] += symbol
         return stack
-    
+
     def apply_query(self, query=None):
         """
         Apply query on data
         """
         if query is None:
             query = self.parse()
-        
+
         results = []
         while query:
             item = query.pop(0)
             if item in self.algorithms.keys():
                 results.append(self.algorithms[item](self.apply_query(query)))
                 continue
-            
+
             if item in self.conditions.keys():
                 query.pop(0)
                 one = query.pop(0)
@@ -94,12 +94,12 @@ class Filter:
 
             if item in (self.OB, self.CS):
                 continue
-            
+
             if item == self.CB:
                 break
 
         return results
-    
+
     def get_results(self):
         results = self.apply_query()
         output = []
@@ -122,7 +122,7 @@ class Subscribtion:
         """
         self.subscribers[key] += data
         return {'result': 'OK'}
-    
+
     def unsubscribe(self, key, data):
         """
         Unsubscribe from events
@@ -131,7 +131,7 @@ class Subscribtion:
         for i, subscribtion in enumerate(self.subscribers[key]):
             if subscribtion in data:
                 unsubscribe_indexes.append(i)
-        
+
         for index in unsubscribe_indexes[::-1]:
             self.subscribers[key].pop(index)
 
@@ -149,7 +149,7 @@ class Subscribtion:
                 result_data.append(_data)
 
         return result_data
-    
+
     def check_data(self, data, subscribtion):
         """
         Check data by subscription

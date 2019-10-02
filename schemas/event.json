@@ -22,6 +22,12 @@
             "title": "Event data",
             "type": "object",
             "properties": {
+                "domain": {
+                    "$id": "#/properties/data/domain",
+                    "title": "Data domain",
+                    "type": "string",
+                    "enum": ["CUSTODIAN"]
+                },
                 "action": {
                     "$id": "#/properties/data/action",
                     "title": "Action",

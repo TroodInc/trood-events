@@ -6,7 +6,7 @@ import jsonschema
 
 from aiohttp import web, WSMsgType
 
-from aiohttp_swagger import *
+from aiohttp_swagger import swagger_path
 
 from events.validators import validate
 
@@ -60,12 +60,11 @@ async def ws(request):
         return web.json_response({'error': 'Forbbiden'}, status=403)
 
     user = user['data']
-    # user = await request.app['auth'].login('admin@demo.com', 'demo')
     logger.info(f'Connection {user["login"]} starting')
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     request.app['websockets'].add(ws)
-    request.app['hub'].add(user['login'], ws)
+    request.app['hub'].add(user, ws)
     try:
         async for message in ws:
             # Recieve data

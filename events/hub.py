@@ -3,7 +3,7 @@ import importlib
 import collections
 
 from events.subscription import Subscribtion
-    
+
 
 def setup(app):
     """
@@ -20,14 +20,17 @@ class Hub:
     def __init__(self, app):
         self.app = app
         self.storage = collections.defaultdict(list)
+        self.users = {}
         self.subsriber = Subscribtion()
-    
-    def add(self, key, ws):
+
+    def add(self, user, ws):
         """
         Add client in storage.
         """
+        key = user['login']
         self.storage[key].append(ws)
-    
+        self.users[key] = user
+
     def remove(self, key):
         """
         Remove client from storage
@@ -36,9 +39,12 @@ class Hub:
         for i, client in enumerate(self.storage.get(key, [])):
             if client not in self.app['websockets']:
                 delete_indexes.append(i)
-        
+
         for index in delete_indexes[::-1]:
             self.storage[key].pop(index)
+
+        if self.storage.get(key) in (None, []):
+            self.users.pop(key, None)
 
     async def process(self, key, data):
         """
@@ -55,13 +61,16 @@ class Hub:
             return
 
         action_data = self.subsriber.check_subscriptions(key, action_data)
+        action_data = self.app['auth'].check_abac(
+            self.users[key], action_data, data.pop('domain')
+        )
         if action_data:
             await self.notify(key, action_data)
-    
+
     async def subscribe(self, key, data):
         data = self.subsriber.subscribe(key, data)
         await self.notify(key, data)
-    
+
     async def unsubscribe(self, key, data):
         data = self.subsriber.unsubscribe(key, data)
         await self.notify(key, data)

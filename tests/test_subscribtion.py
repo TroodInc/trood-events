@@ -24,7 +24,7 @@ def test_filter():
     rql_filter = Filter(data, rql_string)
     result = rql_filter.parse()
     pattern = [
-        'or', '(', 
+        'or', '(',
             'eq', '(', 'author', ',', 'XXX', ')', ',',
             'eq', '(', 'book', ',', 'YYY', ')',
         ')'
@@ -41,7 +41,7 @@ def test_filter():
     rql_filter = Filter(data, rql_string)
     result = rql_filter.parse()
     pattern = [
-        'and', '(', 
+        'and', '(',
             'eq', '(', 'author', ',', 'XXX', ')', ',',
             'eq', '(', 'book', ',', 'YYY', ')',
         ')'
@@ -55,7 +55,7 @@ def test_filter():
     rql_filter = Filter(data, rql_string)
     result = rql_filter.parse()
     pattern = [
-        'and', '(', 
+        'and', '(',
             'eq', '(', 'author', ',', 'ZZZ', ')', ',',
             'eq', '(', 'book', ',', 'ZZZ', ')',
         ')'
@@ -69,7 +69,7 @@ def test_filter():
     rql_filter = Filter(data, rql_string)
     result = rql_filter.parse()
     pattern = [
-        'or', '(', 
+        'or', '(',
             'eq', '(', 'author', ',', 'XXX', ')', ',',
             'eq', '(', 'book', ',', 'YYY', ')', ',',
             'eq', '(', 'book', ',', 'ZZZ', ')',
@@ -88,7 +88,7 @@ def test_filter():
     rql_filter = Filter(data, rql_string)
     result = rql_filter.parse()
     pattern = [
-        'or', '(', 
+        'or', '(',
             'eq', '(', 'author', ',', 'XXX', ')', ',',
             'eq', '(', 'book', ',', 'YYY', ')', ',',
             'eq', '(', 'book', ',', 'XXX', ')',
@@ -121,15 +121,16 @@ def test_subscribtion():
     assert len(subscribtion.subscribers) == 1
     assert len(subscribtion.subscribers[key]) == 1
 
-    data = {
+    data = [{
         'message_type': 'ui_message',
         'type': 'ui',
         'date': '2019-04-20T14:21:07Z',
         'data': {'message': 'TEST MESSAGE'}
-    }
+    }]
+
     result = subscribtion.check_subscriptions(key, data)
     assert result
-    data['message_type'] = 'data_message'
+    data[0]['message_type'] = 'data_message'
     result = subscribtion.check_subscriptions(key, data)
     assert not result
     subscribtion.unsubscribe(key, [{'message_type': 'ui_message'}])
@@ -139,15 +140,15 @@ def test_subscribtion():
       'type': 'employee'
     }]
     subscribtion.subscribe(key, data)
-    data = {
+    data = [{
         'message_type': 'data_update',
         'type': 'employee',
         'date': '2019-04-20T14:21:07Z',
         'data': {'id': 1}
-    }
+    }]
     result = subscribtion.check_subscriptions(key, data)
     assert result
-    data['type'] = 'team'
+    data[0]['type'] = 'team'
     result = subscribtion.check_subscriptions(key, data)
     assert not result
     subscribtion.unsubscribe(
@@ -160,14 +161,14 @@ def test_subscribtion():
       "query": "eq(id,1)",
     }]
     subscribtion.subscribe(key, data)
-    data = {
+    data = [{
         'message_type': 'data_update',
         'type': 'employee',
         'date': '2019-04-20T14:21:07Z',
         'data': {'id': 1}
-    }
+    }]
     result = subscribtion.check_subscriptions(key, data)
     assert result
-    data['data']['id'] = 2
+    data[0]['data']['id'] = 2
     result = subscribtion.check_subscriptions(key, data)
     assert not result
