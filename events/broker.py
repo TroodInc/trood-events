@@ -70,6 +70,7 @@ class Broker:
             return False
 
         message = json.dumps(data).encode()
+        logger.debug(message)
         await channel.default_exchange.publish(
             aio_pika.Message(body=message), routing_key=routing_key
         )
@@ -81,6 +82,7 @@ class Broker:
         """
         async with message.process():
             data = message.body
+            logger.debug(data)
             if not isinstance(data, dict):
                 data = json.loads(data)
 
