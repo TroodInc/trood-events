@@ -15,6 +15,7 @@ console-client:
 	@pipenv run python console_client.py
 
 test:
-	@pipenv run pytest -x
+	@pipenv run python setup.py install
+	@pipenv run pytest -x -v
 
 .PHONY: default run test
