@@ -71,6 +71,8 @@ async def ws(request):
             is_text = message.type == WSMsgType.TEXT
             if is_text and message.data == 'close':
                 await ws.close()
+            elif is_text and message.data == 'ping':
+                await ws.send_json('pong')
             elif is_text:
                 logger.info(message.data)
                 is_valid, msg = validate(

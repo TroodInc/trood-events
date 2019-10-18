@@ -33,6 +33,7 @@ Examples
             "action": "NOTIFY",
             "data": [{
                 "message_type": "ui_message",
+                "type": "BO name",
                 "date": "2019-04-20T14:21:07Z",
                 "data": {"message": "TEST MESSAGE"}
             }]
