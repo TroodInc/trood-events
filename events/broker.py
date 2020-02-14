@@ -141,8 +141,8 @@ class Broker:
 
         Recipient it is user email.
         """
+        logger.debug(f'WS handle {data}')
         for recipient in data['recipients']:
-            logger.debug(recipient)
             await self.app['hub'].process(recipient, data['data'])
 
     async def push_handler(self, data):
