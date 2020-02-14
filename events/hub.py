@@ -1,8 +1,12 @@
 import os
 import importlib
 import collections
+import logging
 
 from events.subscription import Subscribtion
+
+
+logger = logging.getLogger(__name__)
 
 
 def setup(app):
@@ -28,6 +32,7 @@ class Hub:
         Add client in storage.
         """
         key = user['login']
+        logger.debug(f'Add ws connection with {key}')
         self.storage[key].append(ws)
         self.users[key] = user
 
@@ -81,5 +86,7 @@ class Hub:
         """
         Send event to client.
         """
-        for client in self.storage.get(key, []):
+        ws_clients = self.storage.get(key, [])
+        logger.debug(f'Notify ws clients {ws_clients}')
+        for client in ws_clients:
             await client.send_json(data)
