@@ -82,16 +82,18 @@ class Broker:
         """
         async with message.process():
             data = message.body
-            logger.debug(data)
             if not isinstance(data, dict):
                 data = json.loads(data)
 
+            logger.debug(data)
             # Validate data
             is_valid = validate(data, self.app['schemas']['Event'])
             if is_valid:
                 # Route to recipient
                 await self.route(data)
                 # await asyncio.sleep(1)
+            else:
+                logger.debug('Bad message.')
     
     async def route(self, data):
         """
