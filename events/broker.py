@@ -56,7 +56,7 @@ class Broker:
         )   # type: aio_pika.Queue
 
         await queue.consume(self.process_message)
-    
+
     async def produce(self, data, routing_key=None):
         """
         Send new message in queue.
@@ -75,7 +75,7 @@ class Broker:
             aio_pika.Message(body=message), routing_key=routing_key
         )
         return True
-    
+
     async def process_message(self, message):
         """
         Process message from queue.
@@ -94,7 +94,7 @@ class Broker:
                 # await asyncio.sleep(1)
             else:
                 logger.debug('Bad message.')
-    
+
     async def route(self, data):
         """
         Route data to given protocol
@@ -104,8 +104,9 @@ class Broker:
 
         protocol = data.pop('protocol')
         protocol_handler = getattr(self, f'{protocol.lower()}_handler')
+        logger.debug(f'Route to {protocol}')
         await protocol_handler(data)
-    
+
     async def queue_handler(self, data):
         """
         Send data to QUEUE recipients.
@@ -114,7 +115,7 @@ class Broker:
         """
         for recipient in data['recipients']:
             await self.produce(data['data'], recipient)
-    
+
     async def http_handler(self, data):
         """
         Send data to HTTP recipients.
@@ -141,8 +142,9 @@ class Broker:
         Recipient it is user email.
         """
         for recipient in data['recipients']:
+            logger.debug(recipient)
             await self.app['hub'].process(recipient, data['data'])
-    
+
     async def push_handler(self, data):
         """
         Send data to PUSH recipients.
