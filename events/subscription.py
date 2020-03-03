@@ -141,15 +141,14 @@ class Subscribtion:
         """
         Check client subscribtions on event
         """
-        # result_data = []
-        # subscribtions = self.subscribers.get(key, [])
-        # for _data in data:
-        #     results = [self.check_data(_data, s) for s in subscribtions]
-        #     if any(results):
-        #         result_data.append(_data)
+        result_data = []
+        subscribtions = self.subscribers.get(key, [])
+        for _data in data:
+            results = [self.check_data(_data, s) for s in subscribtions]
+            if any(results):
+                result_data.append(_data)
 
-        # return result_data
-        return data
+        return result_data
 
     def check_data(self, data, subscribtion):
         """
