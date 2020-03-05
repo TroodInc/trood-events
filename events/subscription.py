@@ -44,7 +44,7 @@ class Filter:
         for i, record in enumerate(self.data):
             try:
                 value = type(record[key])(value)
-            except ValueError:
+            except (ValueError, KeyError):
                 pass
 
             results.append((i, record[key] == value))
