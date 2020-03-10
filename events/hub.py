@@ -55,7 +55,7 @@ class Hub:
         """
         Process action.
         """
-        INCOME_ACTIONS = ('SUBSCRIBE', 'UNSUBSCRIBE')
+        INCOME_ACTIONS = ('SUBSCRIBE', 'UNSUBSCRIBE', 'RESET')
         OUTCOME_ACTIONS = ('NOTIFY', )
         # Validate
         action = data.pop('action', 'NOTIFY')
@@ -80,6 +80,10 @@ class Hub:
 
     async def unsubscribe(self, key, data):
         data = self.subsriber.unsubscribe(key, data)
+        await self.notify(key, data)
+
+    async def reset(self, key, data):
+        data = self.subsriber.reset(key)
         await self.notify(key, data)
 
     async def notify(self, key, data):

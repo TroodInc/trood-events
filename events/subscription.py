@@ -137,6 +137,13 @@ class Subscribtion:
 
         return {'result': 'OK'}
 
+    def reset(self, key):
+        """
+        Reset all user subscribtions
+        """
+        self.subscribers.pop(key)
+        return {'result': 'OK'}
+
     def check_subscriptions(self, key, data):
         """
         Check client subscribtions on event

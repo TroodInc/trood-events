@@ -32,7 +32,7 @@
                     "$id": "#/properties/data/action",
                     "title": "Action",
                     "type": "string",
-                    "enum": ["SUBSCRIBE", "UNSUBSCRIBE", "NOTIFY"]
+                    "enum": ["SUBSCRIBE", "UNSUBSCRIBE", "RESET", "NOTIFY"]
                 },
                 "data": {
                     "$id": "#/properties/data/data",
