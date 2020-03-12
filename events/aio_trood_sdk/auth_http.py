@@ -148,7 +148,6 @@ class Client:
                 return data
 
             data = await response.json()
-            logger.info(json.dumps(data, indent=4))
 
         return data
 
@@ -163,7 +162,6 @@ class Client:
             data = await response.json()
             if response.status != 200:
                 logger.debug(response.status)
-
-            logger.debug(json.dumps(data, indent=4))
+                logger.info(await response.text())
 
         return data

@@ -80,7 +80,9 @@ async def ws(request):
                 )
                 if is_valid:
                     # Route to queue
-                    await request.app['broker'].produce(message.data)
+                    data = json.loads(message.data)
+                    data['hash'] = hash(ws)
+                    await request.app['broker'].produce(json.dumps(data))
                 else:
                     await ws.send_json({'error': msg})
 

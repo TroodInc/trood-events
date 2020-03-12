@@ -143,7 +143,7 @@ class Broker:
         """
         logger.debug(f'WS handle {data}')
         for recipient in data['recipients']:
-            await self.app['hub'].process(recipient, data['data'])
+            await self.app['hub'].process(recipient, data['data'], data.get('hash'))
 
     async def push_handler(self, data):
         """
