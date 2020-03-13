@@ -6,7 +6,7 @@ async def test_ping(client):
     assert response.status == 200
 
     data = await response.json()
-    assert data == 'pong'
+    assert data == 'event pong'
 
 
 @pytest.mark.skip('Need mock auth')

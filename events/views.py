@@ -18,7 +18,7 @@ async def ping(request):
     """
     ping - pong view
     """
-    return web.json_response('pong')
+    return web.json_response('event pong')
 
 
 @swagger_path("./docs/endpoint_http.yaml")
