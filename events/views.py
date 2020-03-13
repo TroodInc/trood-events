@@ -57,6 +57,7 @@ async def ws(request):
     headers= {'Authorization': f'Token {request.query.get("token")}'}
     user = await request.app['auth'].verify_token(headers)
     if user['status'] != 'OK':
+        logger.info(user)
         return web.json_response({'error': 'Forbbiden'}, status=403)
 
     user = user['data']
