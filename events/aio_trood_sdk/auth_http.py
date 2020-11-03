@@ -156,7 +156,7 @@ class Client:
             'Content-Type': 'application/json',
             'Authorization': headers.get('Authorization', '')
         }
-        url = f'{self.host}api/v1.0/verify-token'
+        url = f'{self.host}api/v1.0/verify-token/'
         async with ClientSession() as session:
             response = await session.post(url, headers=headers)
             data = await response.json()
