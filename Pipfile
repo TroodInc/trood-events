@@ -14,6 +14,7 @@ aio-pika = "*"
 jsonschema = "*"
 Sphinx = "*"
 aiohttp-swagger = "*"
+django = "*"
 trood-sdk = {git = "https://07de0218088728b42ee60f155c71990f1dc6a717:x-oauth-basic@github.com/Q-CIS-DEV/trood-sdk.git"}
 
 [dev-packages]
