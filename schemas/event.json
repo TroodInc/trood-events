@@ -26,7 +26,7 @@
                     "$id": "#/properties/data/domain",
                     "title": "Data domain",
                     "type": "string",
-                    "enum": ["CUSTODIAN"]
+                    "enum": ["CUSTODIAN", "N8N", "EVENT"]
                 },
                 "action": {
                     "$id": "#/properties/data/action",
