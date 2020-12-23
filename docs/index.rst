@@ -1,5 +1,5 @@
 Events service
-=============
+==============
 
 Consume and produce events.
 
@@ -12,12 +12,4 @@ Contents
 --------
 
 .. toctree::
-    broker
-    hub
-    routes
-    schemas
-    server
-    settings
-    subscription
-    validators
-    views
+    rest-api
