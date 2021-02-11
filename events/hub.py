@@ -67,10 +67,10 @@ class Hub:
             await self.notify(key, [message])
             return
 
-        # if self.users.get(key):
-        #     action_data = self.app['auth'].check_abac(
-        #         self.users[key], action_data, data.pop('domain')
-        #     )
+        if self.users.get(key):
+            action_data = self.app['auth'].check_abac(
+                self.users[key], action_data, data.pop('domain')
+            )
         action_data = self.subsriber.check_subscriptions(key, action_data)
         if action_data:
             await self.notify(key, action_data)
