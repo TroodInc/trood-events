@@ -1,22 +1,15 @@
-import uuid
-import json
 import logging
 import hashlib
 import hmac
 import base64
-from functools import reduce
-from operator import __or__
-
 from aiohttp import ClientSession
-from aiohttp.client_exceptions import ClientResponseError
-from trood.core.utils import get_attribute_path
+from trood.contrib.django.auth.engine import TroodABACResolver as ABACResolver, TroodABACEngine as ABACEngine
 
 logger = logging.getLogger(__name__)
 
 
-class TroodABACEngine:
+class TroodABACEngine(ABACEngine):
     retrive_actions = {'data_GET'}
-    filters = []
 
     def __init__(self, user, rules, data, domain, default=None):
         if default is None:
@@ -72,7 +65,7 @@ class TroodABACEngine:
         return data
 
 
-class TroodABACResolver:
+class TroodABACResolver(ABACResolver):
 
     def __init__(self, subject, context):
         self.data_source = {"sbj": subject, "ctx": context}
@@ -111,92 +104,6 @@ class TroodABACResolver:
         operand = "{}__{}".format(operand.replace(".", "__"), operator)
 
         return {operand: value}
-
-    def reveal(self, operand: str, value):
-        is_filter = False
-        parts = operand.split('.', 1)
-
-        if len(parts) == 2:
-            if parts[0] in self.data_source:
-                operand = get_attribute_path(self.data_source[parts[0]], parts[1])
-            elif parts[0] == 'obj':
-                operand = parts[1]
-                is_filter = True
-
-        if type(value) is str:
-            parts = value.split('.', 1)
-            if len(parts) == 2 and parts[0] != 'obj' and parts[0] in self.data_source:
-                value = get_attribute_path(self.data_source[parts[0]], parts[1])
-
-        return operand, value, is_filter
-
-    def evaluate_condition(self, condition):
-        filters = []
-        result = True
-        operator = "exact"
-
-        for operand, value in condition.items():
-            if type(value) is dict:
-                operator, value = list(value.items())[0]
-
-            elif type(value) is list:
-                operator = operand
-
-            operand, value, is_filter = self.reveal(operand, value)
-
-            if is_filter:
-                filters.append(self.make_filter(operand, value))
-            else:
-                res, flt = getattr(self, f'operator_{operator}')(value, operand)
-                if flt:
-                    filters.append(flt)
-
-                if not res:
-                    result = False
-
-        return result, filters
-
-    def operator_exact(self, value, operand):
-        return operand == value, []
-
-    def operator_not(self, value, operand):
-        return operand != value, []
-
-    def operator_in(self, value, operand):
-        return operand in value, []
-
-    def operator_lt(self, value, operand):
-        return operand < value, []
-
-    def operator_gt(self, value, operand):
-        return operand > value, []
-
-    def operator_and(self, conditions: list, *args) -> (bool, list):
-        filters = []
-
-        for condition in conditions:
-            res, flt = self.evaluate_condition(condition)
-            filters.extend(flt)
-
-            if not res:
-                return False, []
-
-        return True, filters
-
-    def operator_or(self, conditions: list, *args) -> (bool, list):
-        filters = []
-
-        result = False
-        for condition in conditions:
-            res, flt = self.evaluate_condition(condition)
-
-            if flt:
-                filters.extend(flt)
-
-            if res:
-                result = True
-
-        return result, reduce(__or__, filters) if filters else []
 
 
 class Client:
