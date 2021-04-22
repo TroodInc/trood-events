@@ -6,4 +6,7 @@ COPY . /app/
 
 RUN pip install --upgrade pip pipenv && pipenv install
 
+
+# RUN pip install -r requirements.txt
+
 CMD ["sh", "docker-entrypoint.sh"]
