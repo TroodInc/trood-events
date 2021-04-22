@@ -6,7 +6,7 @@ import jsonschema
 
 from aiohttp import web, WSMsgType
 
-from aiohttp_swagger import *
+from aiohttp_swagger import swagger_path
 
 from events.validators import validate
 
@@ -18,7 +18,7 @@ async def ping(request):
     """
     ping - pong view
     """
-    return web.json_response('pong')
+    return web.json_response('event pong')
 
 
 @swagger_path("./docs/endpoint_http.yaml")
@@ -57,21 +57,23 @@ async def ws(request):
     headers= {'Authorization': f'Token {request.query.get("token")}'}
     user = await request.app['auth'].verify_token(headers)
     if user['status'] != 'OK':
+        logger.info(user)
         return web.json_response({'error': 'Forbbiden'}, status=403)
 
     user = user['data']
-    # user = await request.app['auth'].login('admin@demo.com', 'demo')
     logger.info(f'Connection {user["login"]} starting')
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     request.app['websockets'].add(ws)
-    request.app['hub'].add(user['login'], ws)
+    request.app['hub'].add(user, ws)
     try:
         async for message in ws:
             # Recieve data
             is_text = message.type == WSMsgType.TEXT
             if is_text and message.data == 'close':
                 await ws.close()
+            elif is_text and message.data == 'ping':
+                await ws.send_json('pong')
             elif is_text:
                 logger.info(message.data)
                 is_valid, msg = validate(
@@ -79,7 +81,9 @@ async def ws(request):
                 )
                 if is_valid:
                     # Route to queue
-                    await request.app['broker'].produce(message.data)
+                    data = json.loads(message.data)
+                    data['hash'] = hash(ws)
+                    await request.app['broker'].produce(json.dumps(data))
                 else:
                     await ws.send_json({'error': msg})
 

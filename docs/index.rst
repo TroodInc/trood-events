@@ -1,10 +1,5 @@
-.. Trood events documentation master file, created by
-   sphinx-quickstart on Tue May 14 15:20:05 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Trood events documentation!
-========================================
+Events service
+=============
 
 Consume and produce events.
 
@@ -26,10 +21,3 @@ Contents
     subscription
     validators
     views
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

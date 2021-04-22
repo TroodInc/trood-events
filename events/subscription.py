@@ -29,22 +29,22 @@ class Filter:
         results = []
         for i, _ in enumerate(self.data):
             results.append((i, any(r[i][1] for r in sub_results)))
-        
+
         return results
 
     def _and(self, sub_results):
         results = []
         for i, _ in enumerate(self.data):
             results.append((i, all(r[i][1] for r in sub_results)))
-        
+
         return results
-    
+
     def _eq(self, key, value):
         results = []
         for i, record in enumerate(self.data):
             try:
                 value = type(record[key])(value)
-            except ValueError:
+            except (ValueError, KeyError):
                 pass
 
             results.append((i, record[key] == value))
@@ -68,21 +68,21 @@ class Filter:
             else:
                 stack[index] += symbol
         return stack
-    
+
     def apply_query(self, query=None):
         """
         Apply query on data
         """
         if query is None:
             query = self.parse()
-        
+
         results = []
         while query:
             item = query.pop(0)
             if item in self.algorithms.keys():
                 results.append(self.algorithms[item](self.apply_query(query)))
                 continue
-            
+
             if item in self.conditions.keys():
                 query.pop(0)
                 one = query.pop(0)
@@ -94,12 +94,12 @@ class Filter:
 
             if item in (self.OB, self.CS):
                 continue
-            
+
             if item == self.CB:
                 break
 
         return results
-    
+
     def get_results(self):
         results = self.apply_query()
         output = []
@@ -116,26 +116,50 @@ class Subscribtion:
     def __init__(self):
         self.subscribers = collections.defaultdict(list)
 
-    def subscribe(self, key, data):
+    def _expand_with_hash(self, data, client_hash):
+        for subscribtion in data:
+            subscribtion['hash'] = client_hash
+        return data
+
+    def _unsubscribe(self, key, indexes):
+        for index in indexes[::-1]:
+            self.subscribers[key].pop(index)
+
+        if len(self.subscribers.get(key, [])) == 0:
+            self.subscribers.pop(key, None)
+
+        return {'result': 'OK'}
+
+    def subscribe(self, key, data, client_hash):
         """
         Subscribe on events
         """
+        data = self._expand_with_hash(data, client_hash)
         self.subscribers[key] += data
         return {'result': 'OK'}
-    
-    def unsubscribe(self, key, data):
+
+    def unsubscribe(self, key, data, client_hash):
         """
         Unsubscribe from events
         """
         unsubscribe_indexes = []
-        for i, subscribtion in enumerate(self.subscribers[key]):
+        data = self._expand_with_hash(data, client_hash)
+        for i, subscribtion in enumerate(self.subscribers.get(key, [])):
             if subscribtion in data:
                 unsubscribe_indexes.append(i)
-        
-        for index in unsubscribe_indexes[::-1]:
-            self.subscribers[key].pop(index)
 
-        return {'result': 'OK'}
+        return self._unsubscribe(key, unsubscribe_indexes)
+
+    def reset(self, key, data, client_hash):
+        """
+        Reset all user subscribtions
+        """
+        unsubscribe_indexes = []
+        for i, subscribtion in enumerate(self.subscribers.get(key, [])):
+            if subscribtion['hash'] == client_hash:
+                unsubscribe_indexes.append(i)
+
+        return self._unsubscribe(key, unsubscribe_indexes)
 
     def check_subscriptions(self, key, data):
         """
@@ -144,12 +168,19 @@ class Subscribtion:
         result_data = []
         subscribtions = self.subscribers.get(key, [])
         for _data in data:
-            results = [self.check_data(_data, s) for s in subscribtions]
+            _data['hashes'] = set()
+            results = []
+            for subscribtion in subscribtions:
+                check_result = self.check_data(_data, subscribtion)
+                results.append(check_result)
+                if check_result:
+                    _data['hashes'].add(subscribtion['hash'])
+
             if any(results):
                 result_data.append(_data)
 
         return result_data
-    
+
     def check_data(self, data, subscribtion):
         """
         Check data by subscription
