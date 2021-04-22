@@ -1,6 +1,7 @@
 .idea
 .vscode
 .env
+*.pyc
 Events.egg-info
 build
 dist
