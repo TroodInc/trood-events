@@ -1,0 +1,14 @@
+aiohttp==3.7.4
+envparse==0.2.0
+pytest==6.2.3
+pytest-aiohttp==0.3.0
+uvloop==0.15.2
+sentry-sdk==0.7.9
+aio-pika==6.8.0
+jsonschema==3.2.0
+Sphinx==3.5.4
+aiohttp-swagger==1.0.15
+trood==1.0.0
+isort==5.8.0
+pylint==2.7.4
+flake8==3.9.1
