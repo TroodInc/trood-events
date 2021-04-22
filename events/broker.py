@@ -56,7 +56,7 @@ class Broker:
         )   # type: aio_pika.Queue
 
         await queue.consume(self.process_message)
-    
+
     async def produce(self, data, routing_key=None):
         """
         Send new message in queue.
@@ -70,11 +70,12 @@ class Broker:
             return False
 
         message = json.dumps(data).encode()
+        logger.debug(message)
         await channel.default_exchange.publish(
             aio_pika.Message(body=message), routing_key=routing_key
         )
         return True
-    
+
     async def process_message(self, message):
         """
         Process message from queue.
@@ -84,13 +85,16 @@ class Broker:
             if not isinstance(data, dict):
                 data = json.loads(data)
 
+            logger.debug(data)
             # Validate data
             is_valid = validate(data, self.app['schemas']['Event'])
             if is_valid:
                 # Route to recipient
                 await self.route(data)
                 # await asyncio.sleep(1)
-    
+            else:
+                logger.debug('Bad message.')
+
     async def route(self, data):
         """
         Route data to given protocol
@@ -100,8 +104,9 @@ class Broker:
 
         protocol = data.pop('protocol')
         protocol_handler = getattr(self, f'{protocol.lower()}_handler')
+        logger.debug(f'Route to {protocol}')
         await protocol_handler(data)
-    
+
     async def queue_handler(self, data):
         """
         Send data to QUEUE recipients.
@@ -110,7 +115,7 @@ class Broker:
         """
         for recipient in data['recipients']:
             await self.produce(data['data'], recipient)
-    
+
     async def http_handler(self, data):
         """
         Send data to HTTP recipients.
@@ -136,9 +141,10 @@ class Broker:
 
         Recipient it is user email.
         """
+        logger.debug(f'WS handle {data}')
         for recipient in data['recipients']:
-            await self.app['hub'].process(recipient, data['data'])
-    
+            await self.app['hub'].process(recipient, data['data'], data.get('hash'))
+
     async def push_handler(self, data):
         """
         Send data to PUSH recipients.
